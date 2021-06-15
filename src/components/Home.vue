@@ -1,7 +1,17 @@
 <template>
 	<div id="app">
+		
+		<el-row type="flex" class="row-bg" justify="center" >
+		<el-col :span="20" style="width: 89%"><div class="grid-content bg-purple-light" justify="center">
 		<p>任务管理系统</p>
-		<p></p>
+		<el-row type="flex" class="row-bg" justify="end">
+			<el-input prefix-icon="el-icon-search" placeholder="搜索" v-model="searchItem" clearable></el-input>
+			<el-button type="primary" round @click="search()" >搜索</el-button>
+		  <el-col :span="2"><div class="grid-content bg-purple-light">
+		  <el-button type="primary" round @click="Logout" >注销</el-button>
+		  </div></el-col>
+		</el-row>
+			
 		<el-dialog title="添加" :visible.sync="dialogVisible" width="500px" :before-close="handleClose" :close-on-press-escape="false"
 		 :close-on-click-modal="false">
 			<el-form :model="form" label-position="labelPosition">
@@ -71,7 +81,9 @@
 							<p>任务描述: {{ scope.row.descrtption }}</p>
 							<p>紧急程度: {{ scope.row.radio }}</p>
 							<div slot="reference" class="name-wrapper">
-								<el-tag size="medium">{{ scope.row.name }}</el-tag>
+								
+								<p id ="sea">{{ scope.row.name }}</p>
+								
 							</div>
 						</el-popover>
 					</template>
@@ -110,22 +122,28 @@
 								<span style="margin-left: 10px">{{ scope.row.enddate }}</span>
 							</template>
 						</el-table-column>
-						<el-table-column prop="name" label="任务名称" min-width="56%">
+						<el-table-column prop="name" label="任务名称" min-width="46%">
 							<template slot-scope="scope">
 								<el-popover trigger="hover" placement="top">
 									<p>任务名词: {{ scope.row.name }}</p>
 									<p>任务描述: {{ scope.row.descrtption }}</p>
 									<p>紧急程度: {{ scope.row.radio }}</p>
 									<div slot="reference" class="name-wrapper">
-										<el-tag size="medium">{{ scope.row.name }}</el-tag>
+										<p>{{ scope.row.name }}</p>
 									</div>
 								</el-popover>
+							</template>
+						</el-table-column>
+						<el-table-column prop="name" label="删除" min-width="10%">
+							<template slot-scope="scope">
+							<el-button type="danger" icon="el-icon-delete" circle @click="DeleteFinished(scope.$index, scope.row)"></el-button>
 							</template>
 						</el-table-column>
 					</el-table>
 				</div>
 			</transition>
 		</div>
+		</div></el-col></el-row>
 	</div>
 </template>
 
@@ -157,6 +175,23 @@
 			}
 		},
 		methods: {
+			search(){
+				for(let i = 0; i< this.todoData.length; i++){
+						this.todoData[i].name = this.todoData[i].name.replace('  searched!', '');
+				}
+				for(let i = 0; i< this.todoData.length; i++){
+					if(this.todoData[i].name==this.searchItem){
+						this.todoData[i].name = this.todoData[i].name + "  searched!";
+					}
+				}
+			},
+			Logout(){
+				this.$confirm('Logout？')
+					.then(_ => {
+						this.$router.push({ path: '/login' });
+					})
+					.catch(_ => {});
+			},
 			editTask() {
 				this.todoData.splice(this.index, 1, this.form2);
 				this.dialogVisible2 = false;
@@ -173,6 +208,9 @@
 			indeedDelete(index, row) {
 				this.todoData.splice(index, 1);
 			},
+			DeleteFinished(index, row) {			
+				this.finished.splice(index, 1);
+			},
 			saveTask() {
 				this.todoData.push(this.form);
 				this.form = {
@@ -182,7 +220,6 @@
 					enddate: "",
 					radio: ""
 				};
-				console.log(this.todoData.length);
 				this.dialogVisible = false;
 			},
 			handleClose(done) {
@@ -199,11 +236,15 @@
 	}
 </script>
 <style>
+	@import url("../style.css");
 	.el-table .warning-row {
 		background: oldlace;
 	}
 
 	.el-table .success-row {
 		background: #f0f9eb;
+	}
+	#app{
+		text-align: center;
 	}
 </style>
