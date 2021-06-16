@@ -11,7 +11,6 @@
 		  <el-button type="primary" round @click="Logout" >注销</el-button>
 		  </div></el-col>
 		</el-row>
-			
 		<el-dialog title="添加" :visible.sync="dialogVisible" width="500px" :before-close="handleClose" :close-on-press-escape="false"
 		 :close-on-click-modal="false">
 			<el-form :model="form" label-position="labelPosition">
@@ -77,13 +76,12 @@
 				<el-table-column prop="name" label="任务名称" min-width="20%">
 					<template slot-scope="scope">
 						<el-popover trigger="hover" placement="top">
-							<p>任务名词: {{ scope.row.name }}</p>
 							<p>任务描述: {{ scope.row.descrtption }}</p>
 							<p>紧急程度: {{ scope.row.radio }}</p>
 							<div slot="reference" class="name-wrapper">
 								
-								<p id ="sea">{{ scope.row.name }}</p>
-								
+									<p v-html='scope.row.name'></p>
+									
 							</div>
 						</el-popover>
 					</template>
@@ -125,11 +123,12 @@
 						<el-table-column prop="name" label="任务名称" min-width="46%">
 							<template slot-scope="scope">
 								<el-popover trigger="hover" placement="top">
-									<p>任务名词: {{ scope.row.name }}</p>
 									<p>任务描述: {{ scope.row.descrtption }}</p>
 									<p>紧急程度: {{ scope.row.radio }}</p>
 									<div slot="reference" class="name-wrapper">
-										<p>{{ scope.row.name }}</p>
+										
+										<p v-html='scope.row.name'></p>
+										
 									</div>
 								</el-popover>
 							</template>
@@ -145,6 +144,8 @@
 		</div>
 		</div></el-col></el-row>
 	</div>
+
+	
 </template>
 
 <script>
@@ -171,19 +172,46 @@
 				value1: 0,
 				show: true,
 				finished: [],
-				index: 0
+				index: 0,
+				searchItem:""
 			}
 		},
 		methods: {
 			search(){
-				for(let i = 0; i< this.todoData.length; i++){
-						this.todoData[i].name = this.todoData[i].name.replace('  searched!', '');
-				}
-				for(let i = 0; i< this.todoData.length; i++){
-					if(this.todoData[i].name==this.searchItem){
-						this.todoData[i].name = this.todoData[i].name + "  searched!";
+				for(let i = 0; i< this.todoData.length; i++){  //染色，全部变为黑色；Dye all item to black
+					if(this.todoData[i].name.indexOf('<font')== -1){
+					
+						this.todoData[i].name = this.todoData[i].name.replace(this.todoData[i].name, `<font color='#000000'>${this.todoData[i].name}</font>`);
 					}
 				}
+
+				for(let i = 0; i< this.todoData.length; i++){ 
+					if(this.todoData[i].name.indexOf(this.searchItem)!= -1){
+						this.todoData[i].name = this.todoData[i].name.replace(`#000000`, `#ff9808`);
+						}
+						else{
+							
+							this.todoData[i].name = this.todoData[i].name.replace(`#ff9808`,`#000000`);
+						}
+				}
+				
+				for(let i = 0; i< this.finished.length; i++){  //染色，全部变为黑色；Dye all item to black
+					if(this.finished[i].name.indexOf('<font')== -1){
+					
+						this.finished[i].name = this.finished[i].name.replace(this.finished[i].name, `<font color='#000000'>${this.finished[i].name}</font>`);
+					}
+				}
+				
+				for(let i = 0; i< this.finished.length; i++){ 
+					if(this.finished[i].name.indexOf(this.searchItem)!= -1){
+						this.finished[i].name = this.finished[i].name.replace(`#000000`, `#ff9808`);
+						}
+						else{
+							
+							this.finished[i].name = this.finished[i].name.replace(`#ff9808`,`#000000`);
+						}
+				}
+				
 			},
 			Logout(){
 				this.$confirm('Logout？')
@@ -246,5 +274,8 @@
 	}
 	#app{
 		text-align: center;
+	}
+	.active{
+		color: #00FF00;
 	}
 </style>
